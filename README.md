@@ -37,6 +37,8 @@ con criterio de aceptación definido **antes** de ver los resultados y se docume
 | `SkillLab1_A01795438.ipynb` | Notebook del laboratorio con las celdas DECISIÓN completadas y ejecutado con salidas |
 | `skill_lab1_variants.json` | Conjunto común del laboratorio (`LAB1-A`) |
 | `figuras/` | Gráficas exportadas de las secciones A, B y C |
+| `criterio_previo.txt` | Criterio de aceptación con la hora en que se registró, antes de consultar `eval_20` |
+| `reporte/` | Fuente del PDF: plantilla HTML, figuras y `generar_pdf.py` (portada, índice y numeración) |
 
 ## Resultados principales
 
@@ -69,3 +71,10 @@ resumen nocturno el capaz cumple (18/20) y la latencia no aplica.
 
 Requiere Python 3 con `pandas` y `matplotlib`. Coloca el notebook y `skill_lab1_variants.json` en la misma
 carpeta y ejecuta las celdas en orden (en Colab, sube el JSON al panel de archivos de la sesión).
+
+Para regenerar el PDF se necesitan Google Chrome y los paquetes `pypdf` y `reportlab`:
+
+```bash
+cd reporte
+python3 generar_pdf.py
+```

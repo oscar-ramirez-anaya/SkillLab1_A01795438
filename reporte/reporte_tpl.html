@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SkillLab1_A01795438</title>
+<style>
+  @page { size: Letter; margin: 18mm 16mm; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1d2329; }
+  h1 { font-size: 17pt; color: #0350a1; margin: 0 0 4px; }
+  h2 { font-size: 13pt; color: #0350a1; border-bottom: 2px solid #0350a1; padding-bottom: 3px; margin: 20px 0 8px; page-break-after: avoid; }
+  h3 { font-size: 11pt; margin: 14px 0 6px; page-break-after: avoid; }
+  .meta { color: #555; font-size: 9.5pt; margin-bottom: 10px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 10px; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 1px solid #c8ced6; padding: 5px 7px; text-align: left; vertical-align: top; }
+  th { background: #0350a1; color: #fff; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  img { width: 100%; margin: 6px 0; page-break-inside: avoid; }
+  img.half { width: 60%; }
+  .box { background: #eef4fb; border-left: 4px solid #0350a1; padding: 8px 12px; margin: 8px 0; page-break-inside: avoid; }
+  .warn { background: #fbeeb8; border-left: 4px solid #b58a00; padding: 8px 12px; margin: 8px 0; }
+  pre { background: #f5f7fa; border: 1px solid #ddd; padding: 8px; font-size: 8.8pt; white-space: pre-wrap; page-break-inside: avoid; }
+  .card th { width: 22%; background: #e3ebf5; color: #1d2329; }
+  ul { margin: 4px 0 8px 18px; padding: 0; }
+  li { margin-bottom: 3px; }
+  .pb { page-break-before: always; }
+  .cover { height: 225mm; display: flex; flex-direction: column; justify-content: center; text-align: center; page-break-after: always; }
+  .cover h1 { font-size: 22pt; margin-bottom: 34px; line-height: 1.25; }
+  .cover p { margin: 3px 0; font-size: 11pt; }
+  .cover .gap { height: 22px; }
+  .toc { width: 100%; border: none; margin: 6px 0 14px; }
+  .toc td { border: none; border-bottom: 1px dotted #b9c1cc; padding: 4px 2px; }
+  .toc td.pg { text-align: right; width: 12%; }
+  .refs p { padding-left: 24px; text-indent: -24px; margin: 0 0 8px; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+<h1>Skill Lab 1<br>Análisis y selección de modelos para un caso de negocio</h1>
+<p><b>Instituto Tecnológico y de Estudios Superiores de Monterrey</b></p>
+<p><b>Maestría en Inteligencia Artificial Aplicada</b></p>
+<div class="gap"></div>
+<p>Materia: Sistemas multiagente (IA5004.10)</p>
+<p>Actividad: Skill Lab 1 — Análisis y selección de modelos para un caso de negocio</p>
+<p>Conjunto de datos: conjunto común LAB1-A (modo precargado)</p>
+<div class="gap"></div>
+<p><b>Alumno:</b> Oscar Alberto Ramírez Anaya</p>
+<p><b>Matrícula:</b> A01795438</p>
+<p><b>Correo:</b> A01795438@tec.mx</p>
+<div class="gap"></div>
+<p><b>Fecha de entrega:</b> 4 de octubre de 2026</p>
+</div>
+
+<h2>Contenido</h2>
+<table class="toc">
+<tr><td>1. Resumen ejecutivo</td><td class="pg">{P1}</td></tr>
+<tr><td>2. Contexto, datos y método</td><td class="pg">{P2}</td></tr>
+<tr><td>3. Sección A. Tokens y costo</td><td class="pg">{P3}</td></tr>
+<tr><td>4. Sección B. Efecto de posición</td><td class="pg">{P4}</td></tr>
+<tr><td>5. Sección C. Evaluación comparativa con criterio previo</td><td class="pg">{P5}</td></tr>
+<tr><td>6. Sección D. Model Decision Cards</td><td class="pg">{P6}</td></tr>
+<tr><td>7. Conclusiones y recomendación de negocio</td><td class="pg">{P7}</td></tr>
+<tr><td>8. Referencias</td><td class="pg">{P8}</td></tr>
+</table>
+
+<h2>1. Resumen ejecutivo</h2>
+<div class="box">
+Para la <b>consulta de campo</b> recomiendo el modelo <b>rápido</b> como decisión provisional: es el único que cumple la latencia de 2.0 s (1.4 s), pero con 13/20 aciertos no alcanza el umbral de 15/20 que fijé antes de ver los resultados, por lo que se usa como asistente sugerido y bajo vigilancia. Para el <b>resumen nocturno</b> recomiendo el modelo <b>capaz</b>, que cumple el criterio (18/20 aciertos) y cuya latencia de 6.3 s no importa en lote. El catálogo (1580 tokens) no debe entrar completo a cada consulta, y la evidencia decisiva debe ir al inicio o al final del contexto: enterrarla en medio cuesta 19 % de desempeño.
+</div>
+
+<h2>2. Contexto, datos y método</h2>
+<p>Distribuidora Cuauhtémoc evalúa un asistente agéntico de inteligencia comercial para dos tareas con perfiles opuestos:</p>
+<table>
+<tr><th>Tarea</th><th>Quién la usa</th><th>Cuándo</th><th>Qué exige</th></tr>
+<tr><td><b>Consulta de campo</b></td><td>El preventista frente a la tienda</td><td>En vivo, cientos de veces al día</td><td>Respuesta en segundos, costo bajo por llamada, errores tolerables (el humano está ahí)</td></tr>
+<tr><td><b>Resumen nocturno de incidentes</b></td><td>El gerente comercial</td><td>Una corrida por noche, en lote</td><td>Máxima calidad de síntesis; la latencia no importa; un error llega al comité sin filtro</td></tr>
+</table>
+<p><b>Datos.</b> Conjunto común <code>LAB1-A</code> del archivo <code>skill_lab1_variants.json</code>: conteos didácticos de tokens de tres textos, razón español/inglés, puntuaciones por posición de la evidencia y resultados agregados simulados de dos modelos ("rápido" y "capaz") en 20 casos. No se ejecutan modelos ni se llama a una API; todas las cifras son simuladas.</p>
+<p><b>Método.</b> (1) Calcular el costo de entrada por llamada y por día con las tarifas didácticas; (2) medir la caída de desempeño por posición; (3) escribir y registrar el criterio de aceptación <b>antes</b> de consultar la comparación de modelos; (4) aplicar el criterio sin modificarlo y documentar la decisión en una Model Decision Card por tarea. El análisis se hizo en pandas (McKinney, 2010) y matplotlib (Hunter, 2007) con el notebook del laboratorio (Tecnológico de Monterrey, 2026).</p>
+
+<h2>3. Sección A. Tokens y costo</h2>
+
+<h3>Resultados</h3>
+<p>Conteos didácticos del conjunto común y costo de entrada con las tarifas de referencia (rápido 0.15 USD y capaz 1.25 USD por millón de tokens), 1000 llamadas por día.</p>
+<table>
+<tr><th>Texto</th><th>Tokens</th><th>USD/llamada rápido</th><th>USD/día rápido</th><th>USD/llamada capaz</th><th>USD/día capaz</th></tr>
+<tr><td>consulta_campo</td><td class="n">47</td><td class="n">0.00000705</td><td class="n">0.00705</td><td class="n">0.00005875</td><td class="n">0.05875</td></tr>
+<tr><td>reporte_incidentes</td><td class="n">449</td><td class="n">0.00006735</td><td class="n">0.06735</td><td class="n">0.00056125</td><td class="n">0.56125</td></tr>
+<tr><td>catalogo</td><td class="n">1580</td><td class="n">0.00023700</td><td class="n">0.23700</td><td class="n">0.00197500</td><td class="n">1.97500</td></tr>
+</table>
+<p>Cálculo: USD/llamada = tokens x tarifa / 1,000,000; USD/día = USD/llamada x 1000. Ejemplo: 1580 x 1.25 / 1,000,000 = 0.001975 USD por llamada, 1.975 USD por día.</p>
+<img src="fig1.png" alt="Tokens y costo por día">
+
+<p><b>Razón español/inglés:</b> 1.32. La demostración de <code>contar_tokens</code> dio es=20 y en=16 (razón 1.25), pero es una <b>estimación</b> de 4 caracteres por token, no una tokenización real como la de BPE (Sennrich et al., 2016); no la uso para costos. Los cálculos usan los conteos didácticos.</p>
+
+<h3>Decisión de mesa</h3>
+<table class="card">
+<tr><th>TEXTO_QUE_NO_ENTRA_COMPLETO</th><td><b>catalogo</b></td></tr>
+<tr><th>POR_QUE</th><td>El catálogo pesa 1580 tokens, 33.6 veces la consulta de campo (47 tokens): completo en cada una de las 1000 llamadas diarias costaría 1.975 USD/día solo de entrada con el capaz (0.237 USD/día con el rápido), contra 0.059 y 0.007 USD/día de la consulta.<br>
+De esos 1580 tokens el preventista solo necesita los renglones del SKU y la tienda que consulta; el resto es ruido que encarece cada llamada y empuja la evidencia útil hacia el medio de la ventana (sección B), así que se recuperan solo los renglones pertinentes.</td></tr>
+</table>
+
+<h3>Interpretación</h3>
+<ul>
+<li><b>El costo escala con lo que se manda, no con lo que se pregunta.</b> La pregunta del preventista cuesta 0.007 USD al día con el rápido; meter el catálogo completo multiplica la entrada por 34.6 (47 + 1580 = 1627 tokens por llamada). Con el capaz, solo el catálogo suma 1.975 USD/día; en un año son unos 721 USD de entrada por un texto que casi nunca se usa completo.</li>
+<li><b>Estas cifras son solo de entrada.</b> No incluyen tokens de salida, instrucciones del sistema ni historial, así que son un piso, no el costo de operación.</li>
+<li><b>El idioma es un dato de presupuesto.</b> Con razón 1.32, el mismo contenido en español cuesta 32 % más tokens que en inglés. Un presupuesto armado con conteos en inglés quedaría corto en la misma proporción.</li>
+<li><b>El reporte de incidentes (449 tokens) sí puede entrar completo</b> al resumen nocturno: es una corrida por noche y cuesta 0.00056 USD de entrada con el capaz.</li>
+</ul>
+
+<h2>4. Sección B. Efecto de posición</h2>
+<h3>Resultados</h3>
+<table>
+<tr><th>Posición de la evidencia</th><th>inicio</th><th>medio</th><th>final</th></tr>
+<tr><td>Puntuación (0-1)</td><td class="n">0.86</td><td class="n">0.71</td><td class="n">0.88</td></tr>
+</table>
+<p>Caída relativa = (máximo - medio) / máximo = (0.88 - 0.71) / 0.88 = 0.193, es decir <b>19 %</b> del máximo. Frente al inicio la caída es (0.86 - 0.71) / 0.86 = 17 %. Entre inicio y final la diferencia es de solo 0.02.</p>
+<img class="half" src="fig2.png" alt="Efecto de posición">
+
+<h3>Interpretación: qué implica para el paquete de contexto del agente</h3>
+<p>El patrón coincide con lo documentado por Liu et al. (2024): los modelos aprovechan mejor la información al inicio o al final de un contexto largo y peor la que queda en medio.</p>
+<ul>
+<li><b>El orden es una decisión de ingeniería.</b> La misma evidencia vale 0.88 al final y 0.71 en medio. En la consulta de campo el paquete debe llevar la pregunta del preventista y los renglones recuperados del SKU al inicio o al final, y nunca entre bloques de relleno.</li>
+<li><b>Más contexto puede rendir menos.</b> Esto conecta con la sección A: si el catálogo de 1580 tokens se mete completo, el renglón relevante queda casi siempre en medio. Se paga 1.975 USD/día de más con el capaz y además se pierde hasta 19 % de desempeño. Recuperar solo lo pertinente ahorra dinero y calidad a la vez.</li>
+<li><b>Es una mejora gratis.</b> Recuperar el 19 % no exige cambiar de modelo ni pagar un token más; solo ordenar bien.</li>
+<li><b>En el resumen nocturno</b> el reporte de 449 tokens se procesa completo; los incidentes graves deben ir al principio o repetirse al final en lugar de quedar en el orden en que llegaron.</li>
+<li><b>Límite:</b> son puntuaciones didácticas de tres posiciones, sin casos ni salidas. No prueban que nuestro sistema pierda 19 %; para afirmarlo hay que medir con casos reales del asistente.</li>
+</ul>
+
+<h2>5. Sección C. Evaluación comparativa con criterio previo</h2>
+
+<h3>Criterio de aceptación (registrado antes de abrir los resultados)</h3>
+<pre>Consulta de campo: se acepta un modelo solo si (1) su latencia media es &lt;= 2.0 s (requisito duro: el preventista no espera más frente al tendero), (2) acierta al menos 15/20 casos (tasa &gt;= 75 %), entendiendo por acierto que la respuesta cita la cifra correcta del dataset (precio, inventario o SKU) y no inventa promociones; (3) si ambos cumplen, se elige el de menor USD por acierto. Si ninguno cumple, no se acepta ninguno y se documenta.
+Resumen nocturno: la latencia no es requisito; se elige el modelo con más aciertos sobre 20 casos (mínimo 15/20 para aceptarlo) y, solo en empate, el de menor USD por acierto.</pre>
+<p>El criterio se registró en <code>registrar_criterio</code> y <code>comprobar_criterio</code> no detectó cambios al ejecutar <code>evaluar</code>.</p>
+
+<h3>Resultados</h3>
+<table>
+<tr><th>Modelo</th><th>Aciertos</th><th>Tasa</th><th>Costo total (USD, 20 casos)</th><th>USD por acierto</th><th>USD por caso</th><th>Latencia media (s)</th></tr>
+<tr><td>rápido</td><td class="n">13/20</td><td class="n">0.65</td><td class="n">1.09</td><td class="n">0.0838</td><td class="n">0.0545</td><td class="n">1.4</td></tr>
+<tr><td>capaz</td><td class="n">18/20</td><td class="n">0.90</td><td class="n">7.12</td><td class="n">0.3956</td><td class="n">0.3560</td><td class="n">6.3</td></tr>
+</table>
+<img src="fig3.png" alt="Trade-off costo-aciertos y latencia">
+
+<h3>Aplicación del criterio</h3>
+<table>
+<tr><th>Condición</th><th>rápido</th><th>capaz</th></tr>
+<tr><td>Campo: latencia &lt;= 2.0 s</td><td>Cumple (1.4 s)</td><td>No cumple (6.3 s, 3.15 veces la tolerancia)</td></tr>
+<tr><td>Campo: aciertos &gt;= 15/20</td><td>No cumple (13/20)</td><td>Cumple (18/20)</td></tr>
+<tr><td><b>Campo: resultado</b></td><td colspan="2"><b>Ninguno se acepta.</b> Se documenta y no se reescribe el criterio (ver card de campo).</td></tr>
+<tr><td>Nocturno: más aciertos y &gt;= 15/20</td><td>13/20, no cumple el mínimo</td><td><b>18/20, se acepta</b></td></tr>
+</table>
+
+<h3>Cómo leo esta evidencia</h3>
+<ul>
+<li><b>Aquí pagar más no sale más barato por resultado.</b> El capaz cuesta 6.5 veces más en total (7.12 contra 1.09 USD) y 4.7 veces más por acierto (0.396 contra 0.084 USD). Aunque acierta 5 casos más, no compensa su precio en costo por resultado.</li>
+<li><b>La latencia es requisito, no desempate.</b> En campo, el 90 % de acierto del capaz no sirve si el preventista espera 6.3 s frente al tendero. En lote, esa misma latencia es irrelevante.</li>
+<li><b>El rápido falla 7 de cada 20 consultas.</b> A 1000 consultas diarias son del orden de 350 respuestas erróneas por día; el capaz serían unas 100. Por eso en campo el humano tiene que verificar.</li>
+</ul>
+
+<h3>Límites del criterio: qué se puede contrastar y qué no</h3>
+<ul>
+<li><b>Sí se contrasta con los agregados:</b> el umbral de latencia (latencia_media), el umbral de 15/20 (aciertos) y el desempate por USD por acierto (costo_total / aciertos).</li>
+<li><b>No se puede contrastar:</b> la definición de acierto ("cita la cifra correcta y no inventa promociones"). Los aciertos vienen precargados y no sé con qué regla se calificaron; cambiar mi criterio no cambia la tabla. Para verificarlo necesitaría las 20 salidas individuales, las respuestas de referencia y una regla de calificación ejecutable.</li>
+<li><b>Latencia media, no percentil.</b> Un promedio de 1.4 s puede esconder colas de 3 o 4 s; para un requisito de campo haría falta el p95.</li>
+<li><b>Muestra pequeña.</b> Con 20 casos, el intervalo de Wilson (1927) al 95 % para 13/20 va de 0.43 a 0.82 y para 18/20 de 0.70 a 0.97. El rápido podría estar por arriba del umbral de 0.75 o muy por debajo, así que 20 casos no bastan para cerrar la decisión de campo.</li>
+<li><b>Tarea distinta.</b> Los 20 casos son de la tarea de campo. Usarlos para el resumen nocturno es una extrapolación que debo validar con casos de síntesis.</li>
+<li><b>Escalas de costo distintas.</b> El costo simulado de la evaluación (0.0545 USD por caso del rápido) no se reconcilia con el costo de entrada de la sección A (0.000007 USD por consulta de 47 tokens). Probablemente incluye contexto y salida, pero el paquete no lo documenta, así que no mezclo las dos cifras en un solo cálculo.</li>
+</ul>
+
+<h3>Experimento contrafactual</h3>
+<p>Con la tabla enfrente es fácil fabricar un criterio a la medida. Quien prefiriera el capaz habría escrito "máximo número de aciertos" y omitido la latencia; quien prefiriera el rápido, "menor costo" y omitido el umbral de aciertos. Cualquiera de los dos "gana" con un criterio elegido después. Con el criterio previo el resultado incómodo queda a la vista: en campo ninguno cumple, y esa es la información útil para la dirección.</p>
+
+<h2>6. Sección D. Model Decision Cards</h2>
+
+<h3>Card 1. Consulta de campo (síncrona, alto volumen)</h3>
+<table class="card">
+<tr><th>Decisión</th><td><b>rápido</b> (provisional)</td></tr>
+<tr><th>Justificación</th><td>Decisión provisional: ningún modelo cumple el criterio previo. El rápido es el único que respeta el requisito duro de latencia (1.4 s contra 6.3 s del capaz, tolerancia 2.0 s), pero sus 13/20 aciertos (65 %) quedan debajo del umbral de 15/20. El capaz (18/20 aciertos) queda descartado por latencia, y además cuesta 0.396 USD por acierto contra 0.084 USD del rápido (4.7 veces más). En campo el humano está presente y el error es tolerable; por eso se adopta el rápido como asistente sugerido, no como respuesta autónoma, sin reescribir el criterio.</td></tr>
+<tr><th>Riesgo residual</th><td>Con 65 % de acierto, de 1000 consultas diarias cerca de 350 podrían traer una cifra equivocada (precio, inventario o promoción). Si el preventista confía sin verificar, el error llega al pedido y al tendero. Los agregados tampoco permiten saber si los errores son cifras inventadas u omisiones.</td></tr>
+<tr><th>Mitigación</th><td>Respuesta siempre con la cifra y su fuente (SKU y renglón del catálogo) para que el preventista la confirme; contexto acotado a los renglones pertinentes con la evidencia al inicio o al final. Muestreo semanal de 20 casos calificados contra el criterio; si en 4 semanas no se alcanzan 15/20 aciertos, revisar el contexto o evaluar un modelo intermedio que cumpla 2.0 s. Monitoreo diario de latencia (alerta si la media pasa de 2.0 s).</td></tr>
+</table>
+
+<h3>Card 2. Resumen nocturno de incidentes (lote, alta exigencia)</h3>
+<table class="card">
+<tr><th>Decisión</th><td><b>capaz</b></td></tr>
+<tr><th>Justificación</th><td>Cumple el criterio previo: 18/20 aciertos (90 %) contra 13/20 del rápido, es decir 2 errores por cada 20 contra 7, y un error aquí llega al comité sin filtro. Su latencia de 6.3 s es irrelevante en lote. Es una sola corrida por noche: el reporte de 449 tokens cuesta 0.00056 USD de entrada con el capaz, y aun con el costo simulado completo (7.12 USD por 20 casos, 0.356 USD por caso) el gasto diario es marginal frente al costo de un error.</td></tr>
+<tr><th>Riesgo residual</th><td>La evaluación de 20 casos es de la tarea de campo, no de síntesis de incidentes: el 90 % no está medido para el resumen nocturno. Sigue habiendo 1 de cada 10 resúmenes con un error que el gerente podría llevar al comité.</td></tr>
+<tr><th>Mitigación</th><td>Antes de producción, evaluar 20 resúmenes reales de incidentes contra un criterio escrito antes (incidente citado con tienda y SKU correctos, sin incidentes inventados). Después, el gerente revisa 2 resúmenes por semana contra el reporte fuente y se registra cada error; si baja de 18/20 en el muestreo mensual, se reabre la decisión.</td></tr>
+</table>
+<p>Control formal del notebook (<code>validar_card</code>): ambas cards con "Completitud formal: OK".</p>
+
+<h3>Salida de la celda-resumen</h3>
+<pre>========================================================
+RESUMEN DE RESULTADOS - LAB1-A
+========================================================
+1. Tokens del catálogo:            1580
+2. Razón español/inglés:           1.32
+3. Score con evidencia en medio:   0.71
+4. Aciertos del modelo capaz:      18/20
+5. Costo total del rápido:         $1.09
+6. Tu decisión para campo:         rapido
+========================================================</pre>
+
+<h2>7. Conclusiones y recomendación de negocio</h2>
+<p><b>Conclusión técnica.</b> Para campo, la evidencia decisiva fue la latencia (1.4 s contra 6.3 s frente a una tolerancia de 2.0 s), que descarta al capaz aunque acierte 18/20. Para el resumen nocturno lo decisivo fue la diferencia de aciertos (18/20 contra 13/20), porque ahí la latencia no importa y el error no tiene filtro. Me sorprendieron tres cosas: ningún modelo cumple el criterio de campo; aquí pagar más no sale más barato por resultado (0.396 contra 0.084 USD por acierto); y solo reordenar el contexto vale 19 % de desempeño sin pagar un token más.</p>
+<p><b>Recomendación a la dirección.</b> Usar el modelo rápido como asistente sugerido en campo (alrededor de 54.5 USD al día por 1000 consultas según el costo simulado de la evaluación), vigilando cada semana que llegue a 15 de 20 aciertos, y el modelo capaz para el resumen nocturno (alrededor de 0.36 USD por corrida), validándolo antes con 20 resúmenes reales de incidentes.</p>
+
+
+
+
+<h2>8. Referencias</h2>
+<div class="refs">
+<p>Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. <i>Computing in Science &amp; Engineering, 9</i>(3), 90–95. https://doi.org/10.1109/MCSE.2007.55</p>
+<p>Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., &amp; Liang, P. (2024). Lost in the middle: How language models use long contexts. <i>Transactions of the Association for Computational Linguistics, 12</i>, 157–173. https://doi.org/10.1162/tacl_a_00638</p>
+<p>McKinney, W. (2010). Data structures for statistical computing in Python. En S. van der Walt &amp; J. Millman (Eds.), <i>Proceedings of the 9th Python in Science Conference</i> (pp. 56–61). https://doi.org/10.25080/Majora-92bf1922-00a</p>
+<p>Sennrich, R., Haddow, B., &amp; Birch, A. (2016). Neural machine translation of rare words with subword units. En <i>Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</i> (pp. 1715–1725). Association for Computational Linguistics. https://doi.org/10.18653/v1/P16-1162</p>
+<p>Tecnológico de Monterrey. (2026). <i>Skill Lab 1 | Análisis y selección de modelos para un caso de negocio</i> [Actividad, notebook <code>skill_lab1_seleccion_modelos.ipynb</code> y conjunto de datos <code>skill_lab1_variants.json</code>]. IA5004.10 Sistemas multiagente, Canvas.</p>
+<p>Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference. <i>Journal of the American Statistical Association, 22</i>(158), 209–212. https://doi.org/10.1080/01621459.1927.10502953</p>
+</div>
+
+</body>
+</html>
